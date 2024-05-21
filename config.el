@@ -76,8 +76,87 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; keybind to go to splash screen
 (map! "C-c d" #'+doom-dashboard/open)
 
-(after! projectile
-  (setq projectile-project-search-path '("/home/lifrankfan/Projects/"))
-  )
+;; tabs in the top
+(use-package centaur-tabs
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
+
+;; autosearch projectile path
+projectile-project-search-path '("~/Projects/")
+
+;; LSP mode
+(use-package! lsp-mode
+  :commands lsp
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
+
+;; LSP ui
+(use-package! lsp-ui
+  :after lsp
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-position 'at-point)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-sideline-show-diagnostics t)
+  (lsp-ui-sideline-show-code-actions t))
+
+;; company mode
+(after! company
+  (setq company-idle-delay 0.2
+        company-minimum-prefix-length 1))
+
+;; LSP for python
+(after! lsp-python-ms
+  (set-lsp-priority! 'pyright 1))
+
+(use-package! lsp-pyright
+  :defer t
+  :init
+  (when (executable-find "pyright")
+    (setq lsp-pyright-multi-root nil
+          lsp-pyright-auto-import-completions t
+          lsp-pyright-use-library-code-for-types t
+          lsp-pyright-venv-path "~/.virtualenvs")
+    (add-hook 'python-mode-hook #'lsp)))
+
+
+;; LSP for C/C++
+(use-package! lsp-clangd
+  :defer t
+  :init
+  (when (executable-find "clangd")
+    (setq lsp-clients-clangd-args '("--header-insertion=never"))
+    (add-hook 'c-mode-hook #'lsp)
+    (add-hook 'c++-mode-hook #'lsp)))
+
+;; LSP for web
+(use-package! lsp-html
+  :defer t
+  :init
+  (when (executable-find "vscode-html-language-server")
+    (add-hook 'html-mode-hook #'lsp)))
+
+(use-package! lsp-css
+  :defer t
+  :init
+  (when (executable-find "vscode-css-language-server")
+    (add-hook 'css-mode-hook #'lsp)))
+
+(use-package! lsp-javascript
+  :defer t
+  :init
+  (when (executable-find "vscode-json-language-server")
+    (add-hook 'js-mode-hook #'lsp)
+    (add-hook 'js2-mode-hook #'lsp)
+    (add-hook 'rjsx-mode-hook #'lsp)))
