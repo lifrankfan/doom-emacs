@@ -28,8 +28,9 @@
   :config
   (centaur-tabs-mode t)
   :bind
-  ("C-S-<" . centaur-tabs-backward)
-  ("C-S->" . centaur-tabs-forward))
+  ("C-<" . centaur-tabs-backward)
+  ("C->" . centaur-tabs-forward))
+(setq centaur-tabs-style "bar")
 
 (use-package! lsp-mode
   :commands lsp
